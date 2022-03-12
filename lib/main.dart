@@ -16,7 +16,9 @@ const AUTH0_CLIENT_ID = '8TJo5suoAGBGH6KjT0i66oFcfS3TW4BL';
 const AUTH0_REDIRECT_URI = 'me.freitag.discorsvp://login-callback';
 const AUTH0_ISSUER = 'https://$AUTH0_DOMAIN';
 
-void main() => runApp(MyApp(key: UniqueKey()));
+void main() {
+  runApp(MyApp(key: UniqueKey()));
+}
 
 class MyApp extends StatefulWidget {
   const MyApp({required Key key}) : super(key: key);
@@ -31,11 +33,12 @@ class _MyAppState extends State<MyApp> {
   String errorMessage = '';
   late String name;
   late String picture;
+  late String authToken;
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'TGIKFAuth00',
+      title: 'DiscoRSVP',
       theme: ThemeData.dark(),
       home: Scaffold(
         //appBar: AppBar(title: const Text('DiscoRsvp'), centerTitle: true),
@@ -43,7 +46,8 @@ class _MyAppState extends State<MyApp> {
           child: isBusy
               ? const CircularProgressIndicator()
               : isLoggedIn
-                  ? Home(logoutAction, name, picture, key: UniqueKey())
+                  ? Home(logoutAction, authToken, name, picture,
+                      key: UniqueKey())
                   : Login(loginAction, errorMessage, key: UniqueKey()),
         ),
       ),
@@ -104,6 +108,7 @@ class _MyAppState extends State<MyApp> {
           isLoggedIn = true;
           name = idFields['name'].toString();
           picture = profile['picture'].toString();
+          authToken = idToken;
         });
       }
     } on Exception catch (e, s) {
@@ -159,6 +164,7 @@ class _MyAppState extends State<MyApp> {
           isLoggedIn = true;
           name = idFields['name'].toString();
           picture = profile['picture'].toString();
+          authToken = idToken;
         });
       }
 
