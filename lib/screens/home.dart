@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import '../deserialization_classes.dart';
 import './profile.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
+
+import 'createform.dart';
 
 class Home extends StatefulWidget {
   final Future<void> Function() logoutAction;
@@ -30,14 +33,6 @@ class _HomeState extends State<Home> {
     ),
   ];
 
-  var formData;
-
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-  }
-
   @override
   void initState() {
     _widgetOptions.add(widget._userProfile);
@@ -66,32 +61,34 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        //appBar: AppBar(title: const Text('DiscoRsvp'), centerTitle: true),
-        body: Center(child: _widgetOptions.elementAt(_selectedIndex)), // ,
+        body: Center(child: _widgetOptions.elementAt(_selectedIndex)),
         floatingActionButton: FloatingActionButton(
             onPressed: () => {
                   widget.socket.emitWithAck('pressed', null, ack: (data) {
-                    print(data);
-                    setState(() {
-                      formData = data;
-                    });
+                    final channels =
+                        data.map<Channel>((e) => Channel.fromJson(e)).toList();
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              CreateForm(channels, key: UniqueKey())),
+                    );
                   })
                 },
             child: const Icon(Icons.add)),
         bottomNavigationBar: BottomNavigationBar(
           items: const <BottomNavigationBarItem>[
-            BottomNavigationBarItem(label: 'Home', icon: Icon(Icons.list_alt)),
             BottomNavigationBarItem(
-                label: 'Profile',
-                icon: CircleAvatar(
-                  radius: 12.0,
-                  backgroundImage:
-                      NetworkImage('https://picsum.photos/250?image=9'),
-                  backgroundColor: Colors.transparent,
-                ))
+                label: 'Home', icon: Icon(Icons.sports_esports)),
+            BottomNavigationBarItem(
+                label: 'Profile', icon: Icon(Icons.account_circle)),
           ],
-          currentIndex: 0,
-          onTap: _onItemTapped,
+          currentIndex: _selectedIndex,
+          onTap: (int index) => {
+            setState(() {
+              _selectedIndex = index;
+            })
+          },
           showSelectedLabels: false,
           showUnselectedLabels: false,
         ));
