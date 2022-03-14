@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:socket_io_client/socket_io_client.dart';
 
-import '../deserialization_classes.dart';
+import '../dto.dart';
 
 class CreateForm extends StatefulWidget {
   final List<Channel> channels;
+  final Socket _socket;
 
-  const CreateForm(this.channels, {required Key key}) : super(key: key);
+  const CreateForm(this.channels, this._socket, {required Key key})
+      : super(key: key);
   @override
   _CreateForm createState() => _CreateForm();
 }
@@ -59,7 +62,7 @@ class _CreateForm extends State<CreateForm> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            Text('Channel'),
+            const Text('Channel'),
             DropdownButtonFormField(
                 hint: const Text("Select a Channel"),
                 items: channelItems,
@@ -71,10 +74,11 @@ class _CreateForm extends State<CreateForm> {
             const SizedBox(
               height: 30,
             ),
-            Text('Squad size'),
+            const Text('Squad size'),
             Slider(
+              min: 2,
               max: 10,
-              divisions: 10,
+              divisions: 8,
               label: _squadSize.round().toString(),
               value: _squadSize,
               onChanged: (double value) {
@@ -87,9 +91,15 @@ class _CreateForm extends State<CreateForm> {
               height: 30,
             ),
             ElevatedButton(
-              onPressed: () {
-                print('create clicked');
-              },
+              onPressed: _selectedChannel != null && _squadSize > 1
+                  ? () {
+                      print('create clicked ${_squadSize} ${_selectedChannel}');
+                      widget._socket.emitWithAck('CreateSession', _squadSize,
+                          ack: (data) {
+                        print('Acknowledged: $data');
+                      });
+                    }
+                  : null,
               child: const Text('Create Session'),
             )
           ],

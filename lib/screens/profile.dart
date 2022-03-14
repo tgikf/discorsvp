@@ -11,25 +11,22 @@ class Profile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
+    return SingleChildScrollView(
+        child: Column(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         Container(
             padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
-            margin: const EdgeInsets.fromLTRB(0, 80, 0, 40),
-            decoration: const BoxDecoration(
-                color: Color.fromARGB(255, 65, 65, 65),
-                border: Border(
-                    top: BorderSide(
-                        width: 0.8, color: Color.fromARGB(255, 148, 148, 148)),
-                    bottom: BorderSide(
-                        width: 0.8,
-                        color: Color.fromARGB(255, 148, 148, 148)))),
+            margin: const EdgeInsets.fromLTRB(0, 80, 0, 20),
+            decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.surface,
+                border: const Border(
+                    top: BorderSide(width: 0.8, color: Colors.grey),
+                    bottom: BorderSide(width: 0.8, color: Colors.grey))),
             child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: <Widget>[
-                  Divider(thickness: 1),
                   Expanded(
                       flex: 1,
                       child: Column(children: <Widget>[
@@ -37,9 +34,7 @@ class Profile extends StatelessWidget {
                           width: 100,
                           height: 100,
                           decoration: BoxDecoration(
-                            border: Border.all(
-                                color: Color.fromARGB(255, 148, 148, 148),
-                                width: 0.8),
+                            border: Border.all(color: Colors.grey, width: 0.8),
                             shape: BoxShape.circle,
                             image: DecorationImage(
                               fit: BoxFit.contain,
@@ -59,8 +54,8 @@ class Profile extends StatelessWidget {
                                   TextSpan(
                                       text: name,
                                       style: const TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 24))
+                                          //fontWeight: FontWeight.bold,
+                                          fontSize: 28))
                                 ],
                               ),
                             ),
@@ -76,24 +71,106 @@ class Profile extends StatelessWidget {
                                 )),
                           ])),
                 ])),
-        const Text.rich(
-          TextSpan(
-            children: <TextSpan>[
-              TextSpan(text: 'History', style: TextStyle(fontSize: 24))
+        Container(
+            padding: const EdgeInsets.fromLTRB(10, 10, 0, 5),
+            child: const Text.rich(
+              TextSpan(
+                children: <TextSpan>[
+                  TextSpan(text: 'History', style: TextStyle(fontSize: 28))
+                ],
+              ),
+            )),
+        Card(
+          clipBehavior: Clip.antiAlias,
+          child: Column(
+            children: [
+              const ListTile(
+                trailing: Chip(
+                  label: Text('Pending'),
+                  backgroundColor: Colors.green,
+                ),
+                title: Text('Don Pedro'),
+                subtitle: Text(
+                  '14 March 2020 (ll9ByWtuHVExOwIFZ0cx)',
+                  //style:
+                  //    TextStyle(color: Theme.of(context).colorScheme.onSurface),
+                ),
+              ),
+              Container(
+                  padding: const EdgeInsets.fromLTRB(17, 5, 0, 0),
+                  child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Available slots: 3/4',
+                          style: TextStyle(
+                              color: Theme.of(context).colorScheme.onSurface),
+                        ),
+                        const Divider(),
+                        Text(
+                          'Squad',
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Theme.of(context).colorScheme.onSurface),
+                        ),
+                        Wrap(
+                          children: const [
+                            Chip(
+                              label: Text('Ali',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.normal,
+                                  )),
+                              backgroundColor: Colors.green,
+                            ),
+                            Chip(
+                              label: Text('Don Pedro',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.normal,
+                                  )),
+                              backgroundColor: Colors.green,
+                            ),
+                            Chip(
+                              label: Text('Black Chicken',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.normal,
+                                  )),
+                              backgroundColor: Colors.blueGrey,
+                            ),
+                            Chip(
+                              label: Text('Pride',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.normal,
+                                  )),
+                              backgroundColor: Colors.blueGrey,
+                            ),
+                          ],
+                        )
+                      ])),
+              ButtonBar(
+                alignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  TextButton(
+                    onPressed: () {
+                      print('join pressed');
+                    },
+                    child: Text(
+                      'Join',
+                      style: TextStyle(
+                          color: Theme.of(context).colorScheme.tertiary),
+                    ),
+                  ),
+                  IconButton(
+                      icon: Icon(Icons.delete_outline_outlined,
+                          color: Theme.of(context).colorScheme.error, size: 20),
+                      onPressed: () {
+                        print('delete pressed');
+                      }),
+                ],
+              ),
             ],
           ),
         ),
-        ListView(
-          shrinkWrap: true,
-          padding: const EdgeInsets.fromLTRB(0, 3, 0, 3),
-          children: const <Widget>[
-            Text("I'm dedicating every day to you"),
-            Text('Domestic life was never quite my style'),
-            Text('When you smile, you knock me out, I fall apart'),
-            Text('And I thought I was so smart'),
-          ],
-        )
       ],
-    );
+    ));
   }
 }

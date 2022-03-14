@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import '../deserialization_classes.dart';
+import '../dto.dart';
 import './profile.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
-import 'createform.dart';
+import 'new_session_form.dart';
 
 class Home extends StatefulWidget {
   final Future<void> Function() logoutAction;
@@ -46,11 +46,6 @@ class _HomeState extends State<Home> {
         IO.OptionBuilder().setTransports(['websocket']).setExtraHeaders(
             {'authorization': widget._authToken}).build());
 
-    /* widget.socket.onConnect((_) {
-      print('connect ${widget.socket.id}');
-      widget.socket.emit('request', 'testRequest');
-    }); */
-
     widget.socket.on('FullLoad', (data) => print('fullload ${data}'));
     widget.socket.on('error', (data) => print(data));
 
@@ -63,6 +58,8 @@ class _HomeState extends State<Home> {
     return Scaffold(
         body: Center(child: _widgetOptions.elementAt(_selectedIndex)),
         floatingActionButton: FloatingActionButton(
+            backgroundColor: Theme.of(context).colorScheme.primary,
+            foregroundColor: Theme.of(context).colorScheme.onPrimary,
             onPressed: () => {
                   widget.socket.emitWithAck('pressed', null, ack: (data) {
                     final channels =
@@ -70,13 +67,15 @@ class _HomeState extends State<Home> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) =>
-                              CreateForm(channels, key: UniqueKey())),
+                          builder: (context) => CreateForm(
+                              channels, widget.socket,
+                              key: UniqueKey())),
                     );
                   })
                 },
             child: const Icon(Icons.add)),
         bottomNavigationBar: BottomNavigationBar(
+          selectedItemColor: Theme.of(context).colorScheme.primary,
           items: const <BottomNavigationBarItem>[
             BottomNavigationBarItem(
                 label: 'Home', icon: Icon(Icons.sports_esports)),

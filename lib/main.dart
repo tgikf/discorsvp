@@ -39,7 +39,8 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'DiscoRSVP',
-      theme: ThemeData.dark(),
+      theme:
+          ThemeData(primarySwatch: Colors.indigo, brightness: Brightness.dark),
       home: Scaffold(
         //appBar: AppBar(title: const Text('DiscoRsvp'), centerTitle: true),
         body: Center(
