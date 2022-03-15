@@ -6,19 +6,19 @@ import 'package:socket_io_client/socket_io_client.dart' as IO;
 import 'new_session_form.dart';
 
 class Home extends StatefulWidget {
-  final Future<void> Function() logoutAction;
-  final String _discordUserName;
-  final String _discordPictureUrl;
+  final Profile _userProfile;
   final String _authToken;
-  late final Profile _userProfile;
+  static List<Widget> _widgetOptions = [];
   late final IO.Socket socket;
 
-  Home(this.logoutAction, this._authToken, this._discordUserName,
-      this._discordPictureUrl,
-      {required Key key})
+  Home(this._authToken, this._userProfile, {required Key key})
       : super(key: key) {
-    _userProfile = Profile(logoutAction, _discordUserName, _discordPictureUrl,
-        key: UniqueKey());
+    _widgetOptions = <Widget>[
+      const Text(
+        'Index 0: Home',
+      ),
+      _userProfile
+    ];
   }
 
   @override
@@ -27,15 +27,9 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   int _selectedIndex = 0;
-  static final List<Widget> _widgetOptions = <Widget>[
-    const Text(
-      'Index 0: Home',
-    ),
-  ];
 
   @override
   void initState() {
-    _widgetOptions.add(widget._userProfile);
     initSocket();
     super.initState();
   }
@@ -56,12 +50,12 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: Center(child: _widgetOptions.elementAt(_selectedIndex)),
+        body: Center(child: Home._widgetOptions.elementAt(_selectedIndex)),
         floatingActionButton: FloatingActionButton(
             backgroundColor: Theme.of(context).colorScheme.primary,
             foregroundColor: Theme.of(context).colorScheme.onPrimary,
             onPressed: () => {
-                  widget.socket.emitWithAck('pressed', null, ack: (data) {
+                  widget.socket.emitWithAck('GetChannels', null, ack: (data) {
                     final channels =
                         data.map<Channel>((e) => Channel.fromJson(e)).toList();
                     Navigator.push(

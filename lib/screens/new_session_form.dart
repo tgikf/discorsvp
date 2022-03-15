@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:socket_io_client/socket_io_client.dart';
 
@@ -64,6 +66,7 @@ class _CreateForm extends State<CreateForm> {
           children: <Widget>[
             const Text('Channel'),
             DropdownButtonFormField(
+                isDense: false,
                 hint: const Text("Select a Channel"),
                 items: channelItems,
                 onChanged: ((selected) {
@@ -93,14 +96,45 @@ class _CreateForm extends State<CreateForm> {
             ElevatedButton(
               onPressed: _selectedChannel != null && _squadSize > 1
                   ? () {
-                      print('create clicked ${_squadSize} ${_selectedChannel}');
-                      widget._socket.emitWithAck('CreateSession', _squadSize,
-                          ack: (data) {
-                        print('Acknowledged: $data');
+                      Map<String, dynamic> sessionRequest = {};
+                      sessionRequest.addAll(
+                          {'channel': _selectedChannel, 'target': _squadSize});
+                      widget._socket.emitWithAck(
+                          'CreateSession', sessionRequest, ack: (data) {
+                        Map<String, dynamic> res = jsonDecode(data);
+                        final String msg = res['success']
+                            ? 'Session created!'
+                            : res['message'];
+
+                        final Icon icn = Icon(
+                            res['success'] ? Icons.headset_mic : Icons.error,
+                            color: res['success']
+                                ? Colors.greenAccent
+                                : Colors.redAccent);
+
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          backgroundColor:
+                              Theme.of(context).colorScheme.primary,
+                          content: Row(children: <Widget>[
+                            icn,
+                            const SizedBox(width: 5),
+                            Text(
+                              msg,
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color:
+                                      Theme.of(context).colorScheme.onPrimary),
+                            )
+                          ]),
+                          duration: const Duration(seconds: 5),
+                        ));
+                        if (res['success']) {
+                          Navigator.pop(context);
+                        }
                       });
                     }
                   : null,
-              child: const Text('Create Session'),
+              child: const Text('Let\'s go!'),
             )
           ],
         ),

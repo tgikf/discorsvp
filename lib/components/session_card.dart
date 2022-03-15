@@ -66,7 +66,7 @@ class SessionCard extends StatelessWidget {
                 child: Text(
                   'Join',
                   style:
-                      TextStyle(color: Theme.of(context).colorScheme.tertiary),
+                      TextStyle(color: Theme.of(context).colorScheme.primary),
                 ),
               ),
               IconButton(

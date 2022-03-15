@@ -6,6 +6,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 import 'screens/login.dart';
 import 'screens/home.dart';
+import 'screens/profile.dart';
 
 final FlutterAppAuth appAuth = FlutterAppAuth();
 const FlutterSecureStorage secureStorage = FlutterSecureStorage();
@@ -47,7 +48,14 @@ class _MyAppState extends State<MyApp> {
           child: isBusy
               ? const CircularProgressIndicator()
               : isLoggedIn
-                  ? Home(logoutAction, authToken, name, picture,
+                  ? Home(
+                      authToken,
+                      Profile(
+                        logoutAction,
+                        name,
+                        picture,
+                        key: UniqueKey(),
+                      ),
                       key: UniqueKey())
                   : Login(loginAction, errorMessage, key: UniqueKey()),
         ),

@@ -1,4 +1,4 @@
-import 'dart:ffi';
+enum SessionStatus { pending, complete, cancelled }
 
 class IdNamePair {
   String id;
@@ -8,6 +8,8 @@ class IdNamePair {
   factory IdNamePair.fromJson(Map<String, dynamic> json) {
     return IdNamePair(json['id'], json['name']);
   }
+
+  Map<String, dynamic> toJson() => {'id': id, 'name': name};
 }
 
 class Channel {
@@ -19,6 +21,11 @@ class Channel {
     return Channel(IdNamePair.fromJson(json['server']),
         IdNamePair.fromJson(json['channel']));
   }
+
+  Map<String, dynamic> toJson() => {
+        'server': server.toJson(),
+        'channel': channel.toJson(),
+      };
 }
 
 class SquadMember {
@@ -30,8 +37,6 @@ class SquadMember {
     return SquadMember(IdNamePair.fromJson(json['member']), json['hasJoined']);
   }
 }
-
-enum SessionStatus { pending, complete, cancelled }
 
 class Session {
   String id;
