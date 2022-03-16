@@ -1,12 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 
+import 'session_wall.dart';
+
 class Profile extends StatelessWidget {
   final Future<void> Function() logoutAction;
-  final String name;
-  final String picture;
+  final String userName;
+  final String userId;
+  final String pictureUri;
+  final SessionWall sessionWall;
 
-  const Profile(this.logoutAction, this.name, this.picture, {required Key key})
+  const Profile(
+      {required this.logoutAction,
+      required this.userName,
+      required this.userId,
+      required this.pictureUri,
+      required this.sessionWall,
+      required Key key})
       : super(key: key);
 
   @override
@@ -35,7 +45,7 @@ class Profile extends StatelessWidget {
                           shape: BoxShape.circle,
                           image: DecorationImage(
                             fit: BoxFit.contain,
-                            image: NetworkImage(picture),
+                            image: NetworkImage(pictureUri),
                           ),
                         ),
                       ),
@@ -49,7 +59,7 @@ class Profile extends StatelessWidget {
                             TextSpan(
                               children: <TextSpan>[
                                 TextSpan(
-                                    text: name,
+                                    text: userName,
                                     style: const TextStyle(
                                         //fontWeight: FontWeight.bold,
                                         fontSize: 28))
@@ -77,96 +87,7 @@ class Profile extends StatelessWidget {
               ],
             ),
           )),
-      Card(
-        clipBehavior: Clip.antiAlias,
-        child: Column(
-          children: [
-            const ListTile(
-              trailing: Chip(
-                label: Text('Pending'),
-                backgroundColor: Colors.green,
-              ),
-              title: Text('Don Pedro'),
-              subtitle: Text(
-                '14 March 2020 (ll9ByWtuHVExOwIFZ0cx)',
-                //style:
-                //    TextStyle(color: Theme.of(context).colorScheme.onSurface),
-              ),
-            ),
-            Container(
-                padding: const EdgeInsets.fromLTRB(17, 5, 0, 0),
-                child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Available slots: 3/4',
-                        style: TextStyle(
-                            color: Theme.of(context).colorScheme.onSurface),
-                      ),
-                      const Divider(),
-                      Text(
-                        'Squad',
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: Theme.of(context).colorScheme.onSurface),
-                      ),
-                      Wrap(
-                        children: const [
-                          Chip(
-                            label: Text('Ali',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.normal,
-                                )),
-                            backgroundColor: Colors.green,
-                          ),
-                          Chip(
-                            label: Text('Don Pedro',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.normal,
-                                )),
-                            backgroundColor: Colors.green,
-                          ),
-                          Chip(
-                            label: Text('Black Chicken',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.normal,
-                                )),
-                            backgroundColor: Colors.blueGrey,
-                          ),
-                          Chip(
-                            label: Text('Pride',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.normal,
-                                )),
-                            backgroundColor: Colors.blueGrey,
-                          ),
-                        ],
-                      )
-                    ])),
-            ButtonBar(
-              alignment: MainAxisAlignment.spaceBetween,
-              children: [
-                TextButton(
-                  onPressed: () {
-                    print('join pressed');
-                  },
-                  child: Text(
-                    'Join',
-                    style: TextStyle(
-                        color: Theme.of(context).colorScheme.tertiary),
-                  ),
-                ),
-                IconButton(
-                    icon: Icon(Icons.delete_outline_outlined,
-                        color: Theme.of(context).colorScheme.error, size: 20),
-                    onPressed: () {
-                      print('delete pressed');
-                    }),
-              ],
-            ),
-          ],
-        ),
-      ),
+      sessionWall
     ]);
   }
 }

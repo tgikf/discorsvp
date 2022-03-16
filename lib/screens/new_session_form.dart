@@ -22,8 +22,6 @@ class _CreateForm extends State<CreateForm> {
 
   @override
   void initState() {
-    print(widget.channels[0].server.name);
-
     super.initState();
   }
 
@@ -134,7 +132,7 @@ class _CreateForm extends State<CreateForm> {
                       });
                     }
                   : null,
-              child: const Text('Let\'s go!'),
+              child: const Text('Create'),
             )
           ],
         ),

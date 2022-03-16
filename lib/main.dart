@@ -32,10 +32,8 @@ class _MyAppState extends State<MyApp> {
   bool isBusy = false;
   bool isLoggedIn = false;
   String errorMessage = '';
-  late String name;
-  late String picture;
-  late String authToken;
-
+  late Map<String, String> _profile;
+  late String _authToken;
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -43,19 +41,14 @@ class _MyAppState extends State<MyApp> {
       theme:
           ThemeData(primarySwatch: Colors.indigo, brightness: Brightness.dark),
       home: Scaffold(
-        //appBar: AppBar(title: const Text('DiscoRsvp'), centerTitle: true),
         body: Center(
           child: isBusy
               ? const CircularProgressIndicator()
               : isLoggedIn
                   ? Home(
-                      authToken,
-                      Profile(
-                        logoutAction,
-                        name,
-                        picture,
-                        key: UniqueKey(),
-                      ),
+                      authToken: _authToken,
+                      userProfile: _profile,
+                      logoutAction: logoutAction,
                       key: UniqueKey())
                   : Login(loginAction, errorMessage, key: UniqueKey()),
         ),
@@ -115,9 +108,12 @@ class _MyAppState extends State<MyApp> {
         setState(() {
           isBusy = false;
           isLoggedIn = true;
-          name = idFields['name'].toString();
-          picture = profile['picture'].toString();
-          authToken = idToken;
+          _profile = {
+            'userName': idFields['name'].toString(),
+            'userId': idFields['sub'].toString().split('|')[2],
+            'pictureUri': profile['picture'].toString(),
+          };
+          _authToken = idToken;
         });
       }
     } on Exception catch (e, s) {
@@ -171,9 +167,12 @@ class _MyAppState extends State<MyApp> {
         setState(() {
           isBusy = false;
           isLoggedIn = true;
-          name = idFields['name'].toString();
-          picture = profile['picture'].toString();
-          authToken = idToken;
+          _profile = {
+            'userName': idFields['name'].toString(),
+            'userId': idFields['sub'].toString().split('|')[2],
+            'pictureUri': profile['picture'].toString(),
+          };
+          _authToken = idToken;
         });
       }
 

@@ -1,60 +1,183 @@
+import 'dart:convert';
+
+import 'package:discorsvp/screens/session_wall.dart';
 import 'package:flutter/material.dart';
 import '../dto.dart';
 import './profile.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 import 'new_session_form.dart';
+import '../common/shared.dart';
 
 class Home extends StatefulWidget {
-  final Profile _userProfile;
-  final String _authToken;
-  static List<Widget> _widgetOptions = [];
+  final Map<String, String> userProfile;
+  final String authToken;
   late final IO.Socket socket;
+  final Future<void> Function() logoutAction;
 
-  Home(this._authToken, this._userProfile, {required Key key})
-      : super(key: key) {
-    _widgetOptions = <Widget>[
-      const Text(
-        'Index 0: Home',
-      ),
-      _userProfile
-    ];
-  }
+  Home(
+      {required this.authToken,
+      required this.userProfile,
+      required this.logoutAction,
+      required Key key})
+      : super(key: key);
 
   @override
   State<Home> createState() => _HomeState();
 }
 
 class _HomeState extends State<Home> {
+  bool isBusy = false;
   int _selectedIndex = 0;
+  static List<Widget> _widgetOptions = [];
+  List<Session> _pendingSessions = [];
+  List<Session> _userHistory = [];
 
   @override
   void initState() {
     initSocket();
+    updateWidgetOptions();
     super.initState();
   }
 
+  void updateWidgetOptions() {
+    _widgetOptions = <Widget>[
+      SessionWall(
+          sessions: _pendingSessions,
+          sessionAction: performSessionAction,
+          userId: widget.userProfile['userId'] ?? 'missingUserId',
+          key: UniqueKey()),
+      Profile(
+        logoutAction: widget.logoutAction,
+        userId: widget.userProfile['userId'] ?? 'missingUserId',
+        userName: widget.userProfile['userName'] ?? 'missingUserName',
+        pictureUri: widget.userProfile['pictureUri'] ?? 'missingPictureUri',
+        sessionWall: SessionWall(
+            sessions: _userHistory,
+            sessionAction: performSessionAction,
+            userId: widget.userProfile['userId'] ?? 'missingUserId',
+            scroll: false,
+            key: UniqueKey()),
+        key: UniqueKey(),
+      )
+    ];
+  }
+
+  @override
+  void dispose() {
+    widget.socket.dispose();
+    super.dispose();
+  }
+
+  Future<void> performSessionAction(
+      String sessionId, SessionAction action) async {
+    setState(() {
+      isBusy = true;
+    });
+    widget.socket.emitWithAck(
+        'SessionAction', {'sessionId': sessionId, 'action': action.name},
+        ack: (data) {
+      Map<String, dynamic> res = jsonDecode(data);
+      final String msg = res['message'];
+
+      final Icon icn = Icon(res['success'] ? Icons.headset_mic : Icons.error,
+          color: res['success'] ? Colors.greenAccent : Colors.redAccent);
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        content: Row(children: <Widget>[
+          icn,
+          const SizedBox(width: 5),
+          Text(
+            msg,
+            style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Theme.of(context).colorScheme.onPrimary),
+          )
+        ]),
+        duration: const Duration(seconds: 5),
+      ));
+      setState(() {
+        isBusy = false;
+      });
+    });
+  }
+
   Future<void> initSocket() async {
+    setState(() {
+      isBusy = true;
+    });
     widget.socket = IO.io(
         'http://10.0.2.2:3000',
-        IO.OptionBuilder().setTransports(['websocket']).setExtraHeaders(
-            {'authorization': widget._authToken}).build());
+        IO.OptionBuilder()
+            .setTransports(['websocket'])
+            .setExtraHeaders({'authorization': widget.authToken})
+            .enableForceNew()
+            .build());
 
-    widget.socket.on('FullLoad', (data) => print('fullload ${data}'));
-    widget.socket.on('error', (data) => print(data));
+    widget.socket.onConnect((_) => {
+          setState(() {
+            isBusy = true;
+          }),
+          widget.socket.emitWithAck('GetPendingSessions', null, ack: (data) {
+            setState(() {
+              _pendingSessions = jsonDecode(data)
+                  .map<Session>((e) => Session.fromJson(e))
+                  .toList();
+              updateWidgetOptions();
+              isBusy = false;
+            });
+          }),
+          widget.socket.emitWithAck('GetUserHistory', null, ack: (data) {
+            setState(() {
+              _userHistory = jsonDecode(data)
+                  .map<Session>((e) => Session.fromJson(e))
+                  .toList();
+              updateWidgetOptions();
+              isBusy = false;
+            });
+          })
+        });
 
-    widget.socket.onDisconnect((_) => print('disconnect'));
-    widget.socket.on('fromServer', (_) => print(_));
+    widget.socket.on('SessionUpdate', (data) {
+      Session session = Session.fromJson(jsonDecode(data));
+      setState(() {
+        int pendingIndex =
+            _pendingSessions.indexWhere((e) => e.id == session.id);
+        if (pendingIndex >= 0) {
+          _pendingSessions[pendingIndex] = session;
+        } else if (session.status == SessionStatus.pending) {
+          _pendingSessions.add(session);
+        }
+
+        int historyIndex = _userHistory.indexWhere((e) => e.id == session.id);
+        if (historyIndex >= 0) {
+          _userHistory[historyIndex] = session;
+        } else {
+          final String userId = widget.userProfile['userId'] ?? 'missingUserId';
+          if (session.isSquadMember(userId) || session.owner.id == userId) {
+            _userHistory.add(session);
+          }
+        }
+        updateWidgetOptions();
+        isBusy = false;
+      });
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: Center(child: Home._widgetOptions.elementAt(_selectedIndex)),
+        body: Center(
+            child: isBusy
+                ? const CircularProgressIndicator()
+                : _widgetOptions.elementAt(_selectedIndex)),
         floatingActionButton: FloatingActionButton(
             backgroundColor: Theme.of(context).colorScheme.primary,
             foregroundColor: Theme.of(context).colorScheme.onPrimary,
             onPressed: () => {
+                  setState(() {
+                    isBusy = true;
+                  }),
                   widget.socket.emitWithAck('GetChannels', null, ack: (data) {
                     final channels =
                         data.map<Channel>((e) => Channel.fromJson(e)).toList();
@@ -65,10 +188,14 @@ class _HomeState extends State<Home> {
                               channels, widget.socket,
                               key: UniqueKey())),
                     );
-                  })
+                    setState(() {
+                      isBusy = false;
+                    });
+                  }),
                 },
             child: const Icon(Icons.add)),
         bottomNavigationBar: BottomNavigationBar(
+          iconSize: 30,
           selectedItemColor: Theme.of(context).colorScheme.primary,
           items: const <BottomNavigationBarItem>[
             BottomNavigationBarItem(
