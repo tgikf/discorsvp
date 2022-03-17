@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:socket_io_client/socket_io_client.dart';
 
-import '../dto.dart';
+import '../common/dto.dart';
 
 class CreateForm extends StatefulWidget {
   final List<Channel> channels;

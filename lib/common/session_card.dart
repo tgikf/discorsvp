@@ -2,7 +2,7 @@ import 'package:discorsvp/common/shared.dart';
 import 'package:flutter/material.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
-import '../dto.dart';
+import 'dto.dart';
 
 class SessionCard extends StatelessWidget {
   final Session _session;

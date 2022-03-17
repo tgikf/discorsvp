@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "651799311638",
+    "project_id": "discorsvp-bfdda",
+    "storage_bucket": "discorsvp-bfdda.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:651799311638:android:250228ae2162f1f15e4c37",
+        "android_client_info": {
+          "package_name": "me.freitag.discorsvp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "651799311638-9smbdsuovj34u0m5mi0qoo6ae5mo8grb.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "me.freitag.discorsvp",
+            "certificate_hash": "60e3063ee674fb38bb6a3c84e2401219b400d687"
+          }
+        },
+        {
+          "client_id": "651799311638-b0ddihsc06qdc7c5fppjulrqh9v8rope.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA8M7_ydPrQHFdj9KhrbZwPBtRfY-0F3Co"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "651799311638-b0ddihsc06qdc7c5fppjulrqh9v8rope.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

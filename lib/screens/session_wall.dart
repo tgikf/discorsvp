@@ -2,7 +2,7 @@ import 'package:discorsvp/common/shared.dart';
 import 'package:flutter/material.dart';
 
 import '../common/session_card.dart';
-import '../dto.dart';
+import '../common/dto.dart';
 
 class SessionWall extends StatelessWidget {
   final Future<void> Function(String, SessionAction) sessionAction;

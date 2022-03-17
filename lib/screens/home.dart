@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:discorsvp/screens/session_wall.dart';
 import 'package:flutter/material.dart';
-import '../dto.dart';
+import '../common/dto.dart';
 import './profile.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 

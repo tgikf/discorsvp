@@ -1,3 +1,5 @@
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
@@ -17,6 +19,10 @@ const AUTH0_CLIENT_ID = '8TJo5suoAGBGH6KjT0i66oFcfS3TW4BL';
 const AUTH0_REDIRECT_URI = 'me.freitag.discorsvp://login-callback';
 const AUTH0_ISSUER = 'https://$AUTH0_DOMAIN';
 
+Future _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  print("Handling a background message: ${message.messageId}");
+}
+
 void main() {
   runApp(MyApp(key: UniqueKey()));
 }
@@ -29,11 +35,44 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  late final FirebaseMessaging _messaging;
   bool isBusy = false;
   bool isLoggedIn = false;
   String errorMessage = '';
   late Map<String, String> _profile;
   late String _authToken;
+
+  void registerNotification() async {
+    // 1. Initialize the Firebase app
+    await Firebase.initializeApp();
+    print('token');
+    print(await FirebaseMessaging.instance.getToken());
+    // 2. Instantiate Firebase Messaging
+    _messaging = FirebaseMessaging.instance;
+
+    // 3. On iOS, this helps to take the user permissions
+    NotificationSettings settings = await _messaging.requestPermission(
+      alert: true,
+      badge: true,
+      provisional: false,
+      sound: true,
+    );
+
+    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+
+    if (settings.authorizationStatus == AuthorizationStatus.authorized) {
+      print('User granted permission');
+      FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+        // Parse the message received
+        print('heeeyaa $message');
+        print(message.notification?.title);
+        print(message.notification?.body);
+      });
+    } else {
+      print('User declined or has not accepted permission');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -135,13 +174,30 @@ class _MyAppState extends State<MyApp> {
     });
   }
 
+  Future<void> checkForInitialMessage() async {
+    await Firebase.initializeApp();
+    RemoteMessage? initialMessage =
+        await FirebaseMessaging.instance.getInitialMessage();
+    print('here $initialMessage');
+    if (initialMessage != null) {
+      print('initialmessage: $initialMessage');
+    }
+  }
+
   @override
   void initState() {
-    initAction();
+    initAuth();
+    registerNotification();
+    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+      print(
+          'App opened from push via ${message.notification?.title}: ${message.notification?.body}');
+    });
+    checkForInitialMessage();
+
     super.initState();
   }
 
-  Future<void> initAction() async {
+  Future<void> initAuth() async {
     final String? storedRefreshToken =
         await secureStorage.read(key: 'refresh_token');
     if (storedRefreshToken == null) return;
