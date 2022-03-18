@@ -146,7 +146,7 @@ class _HomeState extends State<Home> {
         if (pendingIndex >= 0) {
           _pendingSessions[pendingIndex] = session;
         } else if (session.status == SessionStatus.pending) {
-          _pendingSessions.add(session);
+          _pendingSessions.insert(0, session);
         }
 
         int historyIndex = _userHistory.indexWhere((e) => e.id == session.id);
@@ -155,7 +155,7 @@ class _HomeState extends State<Home> {
         } else {
           final String userId = widget.userProfile['userId'] ?? 'missingUserId';
           if (session.isSquadMember(userId) || session.owner.id == userId) {
-            _userHistory.add(session);
+            _userHistory.insert(0, session);
           }
         }
         updateWidgetOptions();
@@ -199,7 +199,7 @@ class _HomeState extends State<Home> {
           selectedItemColor: Theme.of(context).colorScheme.primary,
           items: const <BottomNavigationBarItem>[
             BottomNavigationBarItem(
-                label: 'Home', icon: Icon(Icons.sports_esports)),
+                label: 'Sessions', icon: Icon(Icons.sports_esports)),
             BottomNavigationBarItem(
                 label: 'Profile', icon: Icon(Icons.account_circle)),
           ],
@@ -209,8 +209,8 @@ class _HomeState extends State<Home> {
               _selectedIndex = index;
             })
           },
-          showSelectedLabels: false,
-          showUnselectedLabels: false,
+          showSelectedLabels: true,
+          showUnselectedLabels: true,
         ));
   }
 }

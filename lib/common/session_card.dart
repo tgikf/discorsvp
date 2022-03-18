@@ -116,10 +116,9 @@ class SessionCard extends StatelessWidget {
                     ]),
                   ])),
           ButtonBar(
-            alignment: MainAxisAlignment.spaceBetween,
+            alignment: MainAxisAlignment.center,
             children: [
-              _actionButton ?? Container(),
-              _deleteButton ?? Container(),
+              _actionButton ?? _deleteButton ?? Container(),
             ],
           ),
         ],

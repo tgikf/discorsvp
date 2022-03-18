@@ -47,12 +47,15 @@ class SessionWall extends StatelessWidget {
     if (s.status != SessionStatus.pending) return null;
     if (s.owner.id != userId) return null;
 
-    return IconButton(
-        icon: Icon(Icons.delete_outline_outlined,
-            color: Theme.of(context).colorScheme.error, size: 20),
-        onPressed: () {
-          sessionAction(s.id, SessionAction.cancel);
-        });
+    return OutlinedButton(
+      onPressed: () {
+        sessionAction(s.id, SessionAction.cancel);
+      },
+      child: Text(
+        'Cancel',
+        style: TextStyle(color: Theme.of(context).colorScheme.error),
+      ),
+    );
   }
 
   @override
@@ -62,8 +65,9 @@ class SessionWall extends StatelessWidget {
             e, _buildActionButton(context, e), _buildDeleteButton(context, e),
             key: Key(e.id)))
         .toList();
+
     return _cardList.isEmpty
-        ? const Center(child: Text('No sessions found.'))
+        ? const Text('No sessions found.')
         : scroll
             ? ListView(children: _cardList)
             : Column(

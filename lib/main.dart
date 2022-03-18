@@ -8,7 +8,6 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 import 'screens/login.dart';
 import 'screens/home.dart';
-import 'screens/profile.dart';
 
 final FlutterAppAuth appAuth = FlutterAppAuth();
 const FlutterSecureStorage secureStorage = FlutterSecureStorage();
@@ -64,9 +63,9 @@ class _MyAppState extends State<MyApp> {
       print('User granted permission');
       FirebaseMessaging.onMessage.listen((RemoteMessage message) {
         // Parse the message received
-        print('heeeyaa $message');
         print(message.notification?.title);
         print(message.notification?.body);
+        showSnackBar(message.notification?.body ?? 'noPushMessageBody');
       });
     } else {
       print('User declined or has not accepted permission');
@@ -178,10 +177,26 @@ class _MyAppState extends State<MyApp> {
     await Firebase.initializeApp();
     RemoteMessage? initialMessage =
         await FirebaseMessaging.instance.getInitialMessage();
-    print('here $initialMessage');
+
     if (initialMessage != null) {
-      print('initialmessage: $initialMessage');
+      print(
+          'Initial message with ${initialMessage.notification?.title}, ${initialMessage.notification?.body}');
     }
+  }
+
+  void showSnackBar(String text) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      backgroundColor: Theme.of(context).colorScheme.primary,
+      content: Row(children: <Widget>[
+        Text(
+          text,
+          style: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: Theme.of(context).colorScheme.onPrimary),
+        )
+      ]),
+      duration: const Duration(seconds: 5),
+    ));
   }
 
   @override
@@ -191,6 +206,8 @@ class _MyAppState extends State<MyApp> {
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
       print(
           'App opened from push via ${message.notification?.title}: ${message.notification?.body}');
+      showSnackBar(
+          message.notification?.body ?? 'empty openapp notification body');
     });
     checkForInitialMessage();
 
