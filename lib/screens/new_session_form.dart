@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:socket_io_client/socket_io_client.dart';
+import 'package:overlay_support/overlay_support.dart';
 
 import '../common/dto.dart';
 
@@ -109,23 +110,12 @@ class _CreateForm extends State<CreateForm> {
                             color: res['success']
                                 ? Colors.greenAccent
                                 : Colors.redAccent);
+                        showSimpleNotification(Text(msg),
+                            leading: icn,
+                            background: Theme.of(context).colorScheme.primary,
+                            foreground:
+                                Theme.of(context).colorScheme.onPrimary);
 
-                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                          backgroundColor:
-                              Theme.of(context).colorScheme.primary,
-                          content: Row(children: <Widget>[
-                            icn,
-                            const SizedBox(width: 5),
-                            Text(
-                              msg,
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color:
-                                      Theme.of(context).colorScheme.onPrimary),
-                            )
-                          ]),
-                          duration: const Duration(seconds: 5),
-                        ));
                         if (res['success']) {
                           Navigator.pop(context);
                         }

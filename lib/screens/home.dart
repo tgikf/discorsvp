@@ -2,10 +2,11 @@ import 'dart:convert';
 
 import 'package:discorsvp/screens/session_wall.dart';
 import 'package:flutter/material.dart';
+import 'package:socket_io_client/socket_io_client.dart' as IO;
+import 'package:overlay_support/overlay_support.dart';
+
 import '../common/dto.dart';
 import './profile.dart';
-import 'package:socket_io_client/socket_io_client.dart' as IO;
-
 import 'new_session_form.dart';
 import '../common/shared.dart';
 
@@ -82,20 +83,12 @@ class _HomeState extends State<Home> {
 
       final Icon icn = Icon(res['success'] ? Icons.headset_mic : Icons.error,
           color: res['success'] ? Colors.greenAccent : Colors.redAccent);
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        backgroundColor: Theme.of(context).colorScheme.primary,
-        content: Row(children: <Widget>[
-          icn,
-          const SizedBox(width: 5),
-          Text(
-            msg,
-            style: TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Theme.of(context).colorScheme.onPrimary),
-          )
-        ]),
-        duration: const Duration(seconds: 5),
-      ));
+
+      showSimpleNotification(Text(msg),
+          leading: icn,
+          background: Theme.of(context).colorScheme.primary,
+          foreground: Theme.of(context).colorScheme.onPrimary);
+
       setState(() {
         isBusy = false;
       });

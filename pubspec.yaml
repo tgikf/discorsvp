@@ -40,6 +40,7 @@ dependencies:
   timeago: ^3.2.2
   firebase_core: ^1.13.1
   firebase_messaging: ^11.2.11
+  overlay_support: ^1.2.1
 
 dev_dependencies:
   flutter_test:

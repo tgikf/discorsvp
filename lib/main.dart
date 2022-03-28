@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter_appauth/flutter_appauth.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:overlay_support/overlay_support.dart';
 
 import 'screens/login.dart';
 import 'screens/home.dart';
@@ -42,14 +43,12 @@ class _MyAppState extends State<MyApp> {
   late String _authToken;
 
   void registerNotification() async {
-    // 1. Initialize the Firebase app
     await Firebase.initializeApp();
     print('token');
     print(await FirebaseMessaging.instance.getToken());
     // 2. Instantiate Firebase Messaging
     _messaging = FirebaseMessaging.instance;
 
-    // 3. On iOS, this helps to take the user permissions
     NotificationSettings settings = await _messaging.requestPermission(
       alert: true,
       badge: true,
@@ -62,36 +61,21 @@ class _MyAppState extends State<MyApp> {
     if (settings.authorizationStatus == AuthorizationStatus.authorized) {
       print('User granted permission');
       FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-        // Parse the message received
-        print(message.notification?.title);
-        print(message.notification?.body);
-        showSnackBar(message.notification?.body ?? 'noPushMessageBody');
+        final title = message.notification?.title;
+        final body = message.notification?.body;
+        print('body1 here $body');
+
+        if (title != null && body != null) {
+          print('body here $body');
+          showSimpleNotification(Text(body),
+              subtitle: Text(title),
+              background: Theme.of(context).colorScheme.primary,
+              foreground: Theme.of(context).colorScheme.onPrimary);
+        }
       });
     } else {
       print('User declined or has not accepted permission');
     }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'DiscoRSVP',
-      theme:
-          ThemeData(primarySwatch: Colors.indigo, brightness: Brightness.dark),
-      home: Scaffold(
-        body: Center(
-          child: isBusy
-              ? const CircularProgressIndicator()
-              : isLoggedIn
-                  ? Home(
-                      authToken: _authToken,
-                      userProfile: _profile,
-                      logoutAction: logoutAction,
-                      key: UniqueKey())
-                  : Login(loginAction, errorMessage, key: UniqueKey()),
-        ),
-      ),
-    );
   }
 
   Map<String, dynamic> parseIdToken(String idToken) {
@@ -184,34 +168,23 @@ class _MyAppState extends State<MyApp> {
     }
   }
 
-  void showSnackBar(String text) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      backgroundColor: Theme.of(context).colorScheme.primary,
-      content: Row(children: <Widget>[
-        Text(
-          text,
-          style: TextStyle(
-              fontWeight: FontWeight.bold,
-              color: Theme.of(context).colorScheme.onPrimary),
-        )
-      ]),
-      duration: const Duration(seconds: 5),
-    ));
-  }
-
   @override
   void initState() {
-    initAuth();
-    registerNotification();
-    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-      print(
-          'App opened from push via ${message.notification?.title}: ${message.notification?.body}');
-      showSnackBar(
-          message.notification?.body ?? 'empty openapp notification body');
-    });
-    checkForInitialMessage();
-
     super.initState();
+
+    WidgetsBinding.instance?.addPostFrameCallback((timeStamp) {
+      initAuth();
+      registerNotification();
+      FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+        print(
+            'App opened from push via ${message.notification?.title}: ${message.notification?.body}');
+        showSimpleNotification(
+            Text(message.notification?.body ?? 'noPushMessageBody'),
+            background: Colors.indigo,
+            foreground: Colors.white);
+      });
+      checkForInitialMessage();
+    });
   }
 
   Future<void> initAuth() async {
@@ -257,5 +230,28 @@ class _MyAppState extends State<MyApp> {
       debugPrint('error on refresh token: $e - stack: $s');
       await logoutAction();
     }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return OverlaySupport.global(
+        child: MaterialApp(
+      title: 'DiscoRSVP',
+      theme:
+          ThemeData(primarySwatch: Colors.indigo, brightness: Brightness.dark),
+      home: Scaffold(
+        body: Center(
+          child: isBusy
+              ? const CircularProgressIndicator()
+              : isLoggedIn
+                  ? Home(
+                      authToken: _authToken,
+                      userProfile: _profile,
+                      logoutAction: logoutAction,
+                      key: UniqueKey())
+                  : Login(loginAction, errorMessage, key: UniqueKey()),
+        ),
+      ),
+    ));
   }
 }
