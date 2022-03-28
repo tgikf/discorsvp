@@ -36,6 +36,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   late final FirebaseMessaging _messaging;
+  late String _deviceToken;
   bool isBusy = false;
   bool isLoggedIn = false;
   String errorMessage = '';
@@ -44,8 +45,7 @@ class _MyAppState extends State<MyApp> {
 
   void registerNotification() async {
     await Firebase.initializeApp();
-    print('token');
-    print(await FirebaseMessaging.instance.getToken());
+    _deviceToken = await FirebaseMessaging.instance.getToken() ?? '';
     // 2. Instantiate Firebase Messaging
     _messaging = FirebaseMessaging.instance;
 
@@ -245,8 +245,9 @@ class _MyAppState extends State<MyApp> {
               ? const CircularProgressIndicator()
               : isLoggedIn
                   ? Home(
-                      authToken: _authToken,
                       userProfile: _profile,
+                      authToken: _authToken,
+                      deviceToken: _deviceToken,
                       logoutAction: logoutAction,
                       key: UniqueKey())
                   : Login(loginAction, errorMessage, key: UniqueKey()),

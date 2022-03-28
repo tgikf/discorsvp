@@ -13,12 +13,14 @@ import '../common/shared.dart';
 class Home extends StatefulWidget {
   final Map<String, String> userProfile;
   final String authToken;
+  final String deviceToken;
   late final IO.Socket socket;
   final Future<void> Function() logoutAction;
 
   Home(
-      {required this.authToken,
-      required this.userProfile,
+      {required this.userProfile,
+      required this.authToken,
+      required this.deviceToken,
       required this.logoutAction,
       required Key key})
       : super(key: key);
@@ -103,7 +105,10 @@ class _HomeState extends State<Home> {
         'http://10.0.2.2:3000',
         IO.OptionBuilder()
             .setTransports(['websocket'])
-            .setExtraHeaders({'authorization': widget.authToken})
+            .setExtraHeaders({
+              'authorization': widget.authToken,
+              'device': widget.deviceToken
+            })
             .enableForceNew()
             .build());
 
