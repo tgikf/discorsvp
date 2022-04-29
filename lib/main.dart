@@ -195,8 +195,8 @@ class _MyAppState extends State<MyApp> {
             'App opened from push via ${message.notification?.title}: ${message.notification?.body}');
         showSimpleNotification(
             Text(message.notification?.body ?? 'noPushMessageBody'),
-            background: Colors.indigo,
-            foreground: Colors.white);
+            background: customOrange.shade400,
+            foreground: Colors.black);
       });
       checkForInitialMessage();
     });

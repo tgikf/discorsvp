@@ -106,10 +106,8 @@ class _CreateForm extends State<CreateForm> {
                             : res['message'];
 
                         final Icon icn = Icon(
-                            res['success'] ? Icons.headset_mic : Icons.error,
-                            color: res['success']
-                                ? Colors.greenAccent
-                                : Colors.redAccent);
+                            res['success'] ? Icons.done : Icons.error,
+                            color: Theme.of(context).colorScheme.onPrimary);
                         showSimpleNotification(Text(msg),
                             leading: icn,
                             background: Theme.of(context).colorScheme.primary,

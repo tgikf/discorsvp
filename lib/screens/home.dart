@@ -83,8 +83,8 @@ class _HomeState extends State<Home> {
       Map<String, dynamic> res = jsonDecode(data);
       final String msg = res['message'];
 
-      final Icon icn = Icon(res['success'] ? Icons.headset_mic : Icons.error,
-          color: res['success'] ? Colors.greenAccent : Colors.redAccent);
+      final Icon icn = Icon(res['success'] ? Icons.done : Icons.error,
+          color: Theme.of(context).colorScheme.onPrimary);
 
       showSimpleNotification(Text(msg),
           leading: icn,
