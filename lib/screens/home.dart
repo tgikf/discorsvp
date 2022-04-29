@@ -197,7 +197,7 @@ class _HomeState extends State<Home> {
           selectedItemColor: Theme.of(context).colorScheme.primary,
           items: const <BottomNavigationBarItem>[
             BottomNavigationBarItem(
-                label: 'Sessions', icon: Icon(Icons.sports_esports)),
+                label: 'Sessions', icon: Icon(Icons.headset_mic_outlined)),
             BottomNavigationBarItem(
                 label: 'Profile', icon: Icon(Icons.account_circle)),
           ],
@@ -207,8 +207,8 @@ class _HomeState extends State<Home> {
               _selectedIndex = index;
             })
           },
-          showSelectedLabels: true,
-          showUnselectedLabels: true,
+          showSelectedLabels: false,
+          showUnselectedLabels: false,
         ));
   }
 }

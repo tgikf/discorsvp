@@ -12,7 +12,7 @@ class Login extends StatelessWidget {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
-        ElevatedButton(
+        OutlinedButton(
           onPressed: () async {
             await loginAction();
           },

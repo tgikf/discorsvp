@@ -69,12 +69,11 @@ class Profile extends StatelessWidget {
                           const SizedBox(height: 5),
                           SizedBox(
                               height: 25,
-                              child: ElevatedButton.icon(
-                                icon: const Icon(Icons.logout),
+                              child: OutlinedButton(
                                 onPressed: () async {
                                   await logoutAction();
                                 },
-                                label: const Text('Logout'),
+                                child: const Text('Logout'),
                               )),
                         ])),
               ])),

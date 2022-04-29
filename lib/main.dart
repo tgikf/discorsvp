@@ -19,6 +19,22 @@ const AUTH0_CLIENT_ID = '8TJo5suoAGBGH6KjT0i66oFcfS3TW4BL';
 const AUTH0_REDIRECT_URI = 'me.freitag.discorsvp://login-callback';
 const AUTH0_ISSUER = 'https://$AUTH0_DOMAIN';
 
+MaterialColor customOrange = MaterialColor(
+  0xFFFFA726,
+  <int, Color>{
+    50: Color(0xFFFFF3E0),
+    100: Color(0xFFFFE0B2),
+    200: Color(0xFFFFCC80),
+    300: Color(0xFFFFB74D),
+    400: Color(0xFFFFA726),
+    500: Color(0xFFF57C00),
+    600: Color(0xFFF57C00),
+    700: Color(0xFFF57C00),
+    800: Color(0xFFEF6C00),
+    900: Color(0xFFE65100),
+  },
+);
+
 Future _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   print("Handling a background message: ${message.messageId}");
 }
@@ -46,7 +62,6 @@ class _MyAppState extends State<MyApp> {
   void registerNotification() async {
     await Firebase.initializeApp();
     _deviceToken = await FirebaseMessaging.instance.getToken() ?? '';
-    // 2. Instantiate Firebase Messaging
     _messaging = FirebaseMessaging.instance;
 
     NotificationSettings settings = await _messaging.requestPermission(
@@ -238,7 +253,7 @@ class _MyAppState extends State<MyApp> {
         child: MaterialApp(
       title: 'DiscoRSVP',
       theme:
-          ThemeData(primarySwatch: Colors.indigo, brightness: Brightness.dark),
+          ThemeData(primarySwatch: customOrange, brightness: Brightness.dark),
       home: Scaffold(
         body: Center(
           child: isBusy

@@ -107,8 +107,9 @@ class SessionCard extends StatelessWidget {
                           .toList(),
                       ...List.generate(openSlots, (int index) => index).map(
                         (e) => ChoiceChip(
-                          label: Text('Player ${e + 1}',
-                              style: TextStyle(fontWeight: FontWeight.normal)),
+                          label: Text('Player ${e + _session.squad.length + 1}',
+                              style: const TextStyle(
+                                  fontWeight: FontWeight.normal)),
                           backgroundColor: Colors.blueGrey,
                           selected: false,
                         ),
