@@ -76,16 +76,11 @@ class _MyAppState extends State<MyApp> {
     if (settings.authorizationStatus == AuthorizationStatus.authorized) {
       print('User granted permission');
       FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-        final title = message.notification?.title;
         final body = message.notification?.body;
-        print('body1 here $body');
 
-        if (title != null && body != null) {
-          print('body here $body');
+        if (body != null) {
           showSimpleNotification(Text(body),
-              subtitle: Text(title),
-              background: Theme.of(context).colorScheme.primary,
-              foreground: Theme.of(context).colorScheme.onPrimary);
+              background: customOrange.shade400, foreground: Colors.black);
         }
       });
     } else {
@@ -191,12 +186,11 @@ class _MyAppState extends State<MyApp> {
       initAuth();
       registerNotification();
       FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-        print(
-            'App opened from push via ${message.notification?.title}: ${message.notification?.body}');
-        showSimpleNotification(
-            Text(message.notification?.body ?? 'noPushMessageBody'),
-            background: customOrange.shade400,
-            foreground: Colors.black);
+        final body = message.notification?.body;
+        if (body != null) {
+          showSimpleNotification(Text(body),
+              background: customOrange.shade400, foreground: Colors.black);
+        }
       });
       checkForInitialMessage();
     });

@@ -102,7 +102,8 @@ class _HomeState extends State<Home> {
       isBusy = true;
     });
     widget.socket = IO.io(
-        'http://10.0.2.2:3000',
+        'http://192.168.1.244:3000',
+        /*/ 'https://discorsvp-bfdda.nw.r.appspot.com:3000',*/
         IO.OptionBuilder()
             .setTransports(['websocket'])
             .setExtraHeaders({
@@ -111,30 +112,34 @@ class _HomeState extends State<Home> {
             })
             .enableForceNew()
             .build());
-
-    widget.socket.onConnect((_) => {
-          setState(() {
-            isBusy = true;
-          }),
-          widget.socket.emitWithAck('GetPendingSessions', null, ack: (data) {
-            setState(() {
-              _pendingSessions = jsonDecode(data)
-                  .map<Session>((e) => Session.fromJson(e))
-                  .toList();
-              updateWidgetOptions();
-              isBusy = false;
-            });
-          }),
-          widget.socket.emitWithAck('GetUserHistory', null, ack: (data) {
-            setState(() {
-              _userHistory = jsonDecode(data)
-                  .map<Session>((e) => Session.fromJson(e))
-                  .toList();
-              updateWidgetOptions();
-              isBusy = false;
-            });
-          })
+    widget.socket.onConnectError((data) {
+      print('connect error' + data.toString());
+      isBusy = false;
+    });
+    widget.socket.onConnect((_) {
+      print('connected!!');
+      setState(() {
+        isBusy = true;
+      });
+      widget.socket.emitWithAck('GetPendingSessions', null, ack: (data) {
+        setState(() {
+          _pendingSessions = jsonDecode(data)
+              .map<Session>((e) => Session.fromJson(e))
+              .toList();
+          updateWidgetOptions();
+          isBusy = false;
         });
+      });
+      widget.socket.emitWithAck('GetUserHistory', null, ack: (data) {
+        setState(() {
+          _userHistory = jsonDecode(data)
+              .map<Session>((e) => Session.fromJson(e))
+              .toList();
+          updateWidgetOptions();
+          isBusy = false;
+        });
+      });
+    });
 
     widget.socket.on('SessionUpdate', (data) {
       Session session = Session.fromJson(jsonDecode(data));
