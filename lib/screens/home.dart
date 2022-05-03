@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:discorsvp/common/sliver_screen.dart';
-import 'package:discorsvp/common/sliver_section.dart';
 import 'package:discorsvp/screens/session_wall.dart';
 import 'package:flutter/material.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
