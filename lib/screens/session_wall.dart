@@ -65,9 +65,9 @@ class SessionWall extends StatelessWidget {
         .toList();
 
     return _cardList.isEmpty
-        ? const Text('No sessions found.')
-        :Column(
-                children: _cardList,
-              );
+        ? const Center(child: Text('No sessions found.'))
+        : Column(
+            children: _cardList,
+          );
   }
 }

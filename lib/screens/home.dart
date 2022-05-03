@@ -47,38 +47,27 @@ class _HomeState extends State<Home> {
 
   void updateWidgetOptions() {
     _widgetOptions = <Widget>[
-      SliverScreen(
-        sections: [
-          SliverSection(sectionTitle: 'Sessions', children: [
-            SessionWall(
-                sessions: _pendingSessions,
-                sessionAction: performSessionAction,
-                userId: widget.userProfile['userId'] ?? 'missingUserId',
-                key: UniqueKey())
-          ])
-        ],
-      ),
-      SliverScreen(
-        sections: [
-          SliverSection(sectionTitle: 'Account', children: [
-            Profile(
-              logoutAction: widget.logoutAction,
-              userId: widget.userProfile['userId'] ?? 'missingUserId',
-              userName: widget.userProfile['userName'] ?? 'missingUserName',
-              pictureUri:
-                  widget.userProfile['pictureUri'] ?? 'missingPictureUri',
-              key: UniqueKey(),
-            )
-          ]),
-          SliverSection(sectionTitle: 'Session History', children: [
-            SessionWall(
-                sessions: _userHistory,
-                sessionAction: performSessionAction,
-                userId: widget.userProfile['userId'] ?? 'missingUserId',
-                key: UniqueKey())
-          ])
-        ],
-      )
+      SliverScreen(title: 'Sessions', children: [
+        SessionWall(
+            sessions: _pendingSessions,
+            sessionAction: performSessionAction,
+            userId: widget.userProfile['userId'] ?? 'missingUserId',
+            key: UniqueKey())
+      ]),
+      SliverScreen(title: 'Account', children: [
+        Profile(
+          logoutAction: widget.logoutAction,
+          userId: widget.userProfile['userId'] ?? 'missingUserId',
+          userName: widget.userProfile['userName'] ?? 'missingUserName',
+          pictureUri: widget.userProfile['pictureUri'] ?? 'missingPictureUri',
+          key: UniqueKey(),
+        ),
+        SessionWall(
+            sessions: _userHistory,
+            sessionAction: performSessionAction,
+            userId: widget.userProfile['userId'] ?? 'missingUserId',
+            key: UniqueKey())
+      ])
     ];
   }
 
