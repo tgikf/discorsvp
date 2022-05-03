@@ -26,7 +26,7 @@ class SessionCard extends StatelessWidget {
         text = 'Completed';
         break;
       case SessionStatus.cancelled:
-        clr = Colors.red;
+        clr = Colors.blueGrey;
         text = 'Cancelled';
         break;
       default:

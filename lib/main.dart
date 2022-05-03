@@ -36,7 +36,7 @@ MaterialColor customOrange = MaterialColor(
 );
 
 Future _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  print("Handling a background message: ${message.messageId}");
+  debugPrint("Handling a background message: ${message.messageId}");
 }
 
 void main() {
@@ -74,7 +74,7 @@ class _MyAppState extends State<MyApp> {
     FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
     if (settings.authorizationStatus == AuthorizationStatus.authorized) {
-      print('User granted permission');
+      debugPrint('Messaging permissions granted');
       FirebaseMessaging.onMessage.listen((RemoteMessage message) {
         final body = message.notification?.body;
 
@@ -84,7 +84,7 @@ class _MyAppState extends State<MyApp> {
         }
       });
     } else {
-      print('User declined or has not accepted permission');
+      debugPrint('Messaging permissions rejected');
     }
   }
 
@@ -173,7 +173,7 @@ class _MyAppState extends State<MyApp> {
         await FirebaseMessaging.instance.getInitialMessage();
 
     if (initialMessage != null) {
-      print(
+      debugPrint(
           'Initial message with ${initialMessage.notification?.title}, ${initialMessage.notification?.body}');
     }
   }

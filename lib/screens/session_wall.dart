@@ -8,12 +8,10 @@ class SessionWall extends StatelessWidget {
   final Future<void> Function(String, SessionAction) sessionAction;
   final List<Session> sessions;
   final String userId;
-  final bool scroll;
   const SessionWall(
       {required this.sessions,
       required this.sessionAction,
       required this.userId,
-      this.scroll = true,
       Key? key})
       : super(key: key);
 
@@ -68,9 +66,7 @@ class SessionWall extends StatelessWidget {
 
     return _cardList.isEmpty
         ? const Text('No sessions found.')
-        : scroll
-            ? ListView(children: _cardList)
-            : Column(
+        :Column(
                 children: _cardList,
               );
   }

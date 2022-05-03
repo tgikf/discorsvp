@@ -1,27 +1,22 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/painting.dart';
-
-import 'session_wall.dart';
 
 class Profile extends StatelessWidget {
   final Future<void> Function() logoutAction;
   final String userName;
   final String userId;
   final String pictureUri;
-  final SessionWall sessionWall;
 
   const Profile(
       {required this.logoutAction,
       required this.userName,
       required this.userId,
       required this.pictureUri,
-      required this.sessionWall,
       required Key key})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return ListView(children: <Widget>[
+    return Column(children: <Widget>[
       Container(
           padding: const EdgeInsets.fromLTRB(0, 10, 0, 10),
           margin: const EdgeInsets.fromLTRB(0, 20, 0, 20),
@@ -77,16 +72,6 @@ class Profile extends StatelessWidget {
                               )),
                         ])),
               ])),
-      Container(
-          padding: const EdgeInsets.fromLTRB(10, 10, 0, 5),
-          child: const Text.rich(
-            TextSpan(
-              children: <TextSpan>[
-                TextSpan(text: 'History', style: TextStyle(fontSize: 28))
-              ],
-            ),
-          )),
-      sessionWall
     ]);
   }
 }

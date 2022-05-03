@@ -66,6 +66,7 @@ class _CreateForm extends State<CreateForm> {
             const Text('Channel'),
             DropdownButtonFormField(
                 isDense: false,
+                isExpanded: true,
                 hint: const Text("Select a Channel"),
                 items: channelItems,
                 onChanged: ((selected) {
@@ -92,7 +93,34 @@ class _CreateForm extends State<CreateForm> {
             const SizedBox(
               height: 30,
             ),
-            ElevatedButton(
+            Card(
+              clipBehavior: Clip.antiAlias,
+              child: Container(
+                  padding: const EdgeInsets.fromLTRB(0, 16, 0, 16),
+                  child: Column(
+                    children: const [
+                      ListTile(
+                          leading: Icon(Icons.info_outline),
+                          title: Text('Channel Selection'),
+                          subtitle: Text(
+                              'For its channels to be available, a Discord server must be onboarded to DiscoRSVP.')),
+                      Divider(
+                        indent: 16,
+                        endIndent: 16,
+                      ),
+                      ListTile(
+                        leading: Icon(Icons.admin_panel_settings_outlined),
+                        title: Text('User Permissions'),
+                        subtitle: Text(
+                            'To join your session, all squad members need the respective privileges on the Discord server of your chosen channel.'),
+                      )
+                    ],
+                  )),
+            ),
+            const SizedBox(
+              height: 30,
+            ),
+            OutlinedButton(
               onPressed: _selectedChannel != null && _squadSize > 1
                   ? () {
                       Map<String, dynamic> sessionRequest = {};

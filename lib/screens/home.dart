@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:discorsvp/common/sliver_screen.dart';
+import 'package:discorsvp/common/sliver_section.dart';
 import 'package:discorsvp/screens/session_wall.dart';
 import 'package:flutter/material.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
@@ -45,23 +47,37 @@ class _HomeState extends State<Home> {
 
   void updateWidgetOptions() {
     _widgetOptions = <Widget>[
-      SessionWall(
-          sessions: _pendingSessions,
-          sessionAction: performSessionAction,
-          userId: widget.userProfile['userId'] ?? 'missingUserId',
-          key: UniqueKey()),
-      Profile(
-        logoutAction: widget.logoutAction,
-        userId: widget.userProfile['userId'] ?? 'missingUserId',
-        userName: widget.userProfile['userName'] ?? 'missingUserName',
-        pictureUri: widget.userProfile['pictureUri'] ?? 'missingPictureUri',
-        sessionWall: SessionWall(
-            sessions: _userHistory,
-            sessionAction: performSessionAction,
-            userId: widget.userProfile['userId'] ?? 'missingUserId',
-            scroll: false,
-            key: UniqueKey()),
-        key: UniqueKey(),
+      SliverScreen(
+        sections: [
+          SliverSection(sectionTitle: 'Sessions', children: [
+            SessionWall(
+                sessions: _pendingSessions,
+                sessionAction: performSessionAction,
+                userId: widget.userProfile['userId'] ?? 'missingUserId',
+                key: UniqueKey())
+          ])
+        ],
+      ),
+      SliverScreen(
+        sections: [
+          SliverSection(sectionTitle: 'Account', children: [
+            Profile(
+              logoutAction: widget.logoutAction,
+              userId: widget.userProfile['userId'] ?? 'missingUserId',
+              userName: widget.userProfile['userName'] ?? 'missingUserName',
+              pictureUri:
+                  widget.userProfile['pictureUri'] ?? 'missingPictureUri',
+              key: UniqueKey(),
+            )
+          ]),
+          SliverSection(sectionTitle: 'Session History', children: [
+            SessionWall(
+                sessions: _userHistory,
+                sessionAction: performSessionAction,
+                userId: widget.userProfile['userId'] ?? 'missingUserId',
+                key: UniqueKey())
+          ])
+        ],
       )
     ];
   }
@@ -102,8 +118,8 @@ class _HomeState extends State<Home> {
       isBusy = true;
     });
     widget.socket = IO.io(
-        'http://192.168.1.244:3000',
-        /*/ 'https://discorsvp-bfdda.nw.r.appspot.com:3000',*/
+        //'http://192.168.1.244:3000',
+        'https://discorsvp-bfdda.nw.r.appspot.com',
         IO.OptionBuilder()
             .setTransports(['websocket'])
             .setExtraHeaders({
@@ -112,12 +128,13 @@ class _HomeState extends State<Home> {
             })
             .enableForceNew()
             .build());
+
     widget.socket.onConnectError((data) {
-      print('connect error' + data.toString());
+      debugPrint('Failed to connect to service: ' + data.toString());
       isBusy = false;
     });
+
     widget.socket.onConnect((_) {
-      print('connected!!');
       setState(() {
         isBusy = true;
       });
@@ -147,7 +164,11 @@ class _HomeState extends State<Home> {
         int pendingIndex =
             _pendingSessions.indexWhere((e) => e.id == session.id);
         if (pendingIndex >= 0) {
-          _pendingSessions[pendingIndex] = session;
+          if (session.status == SessionStatus.pending) {
+            _pendingSessions[pendingIndex] = session;
+          } else {
+            _pendingSessions.removeAt(pendingIndex);
+          }
         } else if (session.status == SessionStatus.pending) {
           _pendingSessions.insert(0, session);
         }
